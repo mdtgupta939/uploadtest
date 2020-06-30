@@ -1,9 +1,13 @@
+// Default Packages.
 const express = require("express");
-const upload = require("express-fileupload");
+const fileUpload = require("express-fileupload");
 
 const app = express();
 
-app.use(upload());
+// Constants
+TEMP_FOLDER_PATH = "./public/tmp";
+
+app.use(fileUpload({ useTempFiles: true, tempFileDir: TEMP_FOLDER_PATH }));
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -11,18 +15,24 @@ app.get("/", (req, res) => {
 
 app.post("/", (req, res) => {
   if (req.files) {
-    console.log(req.files);
-    var file = req.files.file;
-    var filename = file.name;
-    console.log(filename);
+    req.files.file.mv("./uploads/" + req.files.file.name, function (
+      err,
+      success
+    ) {
+      if (err) {
+        console.log("Error in saving file - ", err);
+        return res.statusCode(500);
+      }
+      console.log("File saved");
+      res.download("./uploads/" + req.files.file.name , function (downloadError) {
+        if (downloadError) {
+          console.log("Error in downloading file.\n", downloadError);
+          return res.sendStatus(500);
+        }
+        console.log("File downloaded");
+      });
+    });
   }
-  file.mv("./upload/" + filename, function (err) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send("file uploaded");
-    }
-  });
 });
 
-app.listen(5000);
+app.listen(3000);
