@@ -13,3 +13,4 @@ RUN npm install
 VOLUME /app
 
 ENTRYPOINT node .
+
