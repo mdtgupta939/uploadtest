@@ -1,0 +1,21 @@
+kind: pipeline
+type: docker
+name: default
+
+      
+- name: docker
+  image: plugins/docker
+  privileged: false
+  settings:
+    registry: docker.io
+    repo: docker.io/muditp1234/drone-test
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    insecure: false
+    auto_tag: true
+  when: 
+    event: tag
+      
+      
